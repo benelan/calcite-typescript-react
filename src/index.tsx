@@ -4,6 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+import "@esri/calcite-components"; // for typings
+import { setAssetPath } from "@esri/calcite-components/dist/components";
+import "@esri/calcite-components/dist/calcite/calcite.css";
+setAssetPath(window.location.href);
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
