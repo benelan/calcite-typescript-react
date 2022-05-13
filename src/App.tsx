@@ -7,8 +7,10 @@ import "@esri/calcite-components/dist/components/calcite-icon";
 import "@esri/calcite-components/dist/components/calcite-switch";
 import "@esri/calcite-components/dist/components/calcite-action-bar";
 import "@esri/calcite-components/dist/components/calcite-action";
+import "@esri/calcite-components/dist/components/calcite-action-group";
 import "@esri/calcite-components/dist/components/calcite-flow";
 import "@esri/calcite-components/dist/components/calcite-block";
+import "@esri/calcite-components/dist/components/calcite-block-section";
 import "@esri/calcite-components/dist/components/calcite-value-list";
 import "@esri/calcite-components/dist/components/calcite-value-list-item";
 import {
@@ -19,55 +21,47 @@ import {
   CalciteIcon,
   CalciteSwitch,
   CalciteActionBar,
+  CalciteActionGroup,
   CalciteAction,
   CalciteFlow,
   CalciteBlock,
+  CalciteBlockSection,
   CalciteValueList,
   CalciteValueListItem,
 } from "@esri/calcite-components-react";
 import "./App.css";
 
 function App() {
-  const [activePanel, setActivePanel] = useState("layers");
+  const [activeAction, setActiveAction] = useState("");
 
-  function handleActionBarClick(
+  const handleActionBarClick = (
     event: React.MouseEvent<HTMLCalciteActionBarElement>
-  ) {
+  ) => {
     const target = event.target as HTMLCalciteActionElement;
     if (target.tagName !== "CALCITE-ACTION") {
       return;
     }
 
-    if (activePanel) {
+    if (activeAction) {
       (
         document.querySelector(
-          `[data-action-id=${activePanel}]`
+          `[id=${activeAction}]`
         ) as HTMLCalciteActionElement
       ).active = false;
-      (
-        document.querySelector(
-          `[data-panel-id=${activePanel}]`
-        ) as HTMLCalcitePanelElement
-      ).hidden = true;
     }
 
-    const nextPanel = target.dataset.actionId;
-    if (nextPanel && nextPanel !== activePanel) {
+    const nextAction = target.id;
+    if (nextAction && nextAction !== activeAction) {
       (
         document.querySelector(
-          `[data-action-id=${nextPanel}]`
+          `[id=${nextAction}]`
         ) as HTMLCalciteActionElement
       ).active = true;
-      (
-        document.querySelector(
-          `[data-panel-id=${nextPanel}]`
-        ) as HTMLCalcitePanelElement
-      ).hidden = false;
-      setActivePanel(nextPanel);
+      setActiveAction(nextAction);
     } else {
-      setActivePanel("");
+      setActiveAction("");
     }
-  }
+  };
 
   return (
     <div id="app">
@@ -81,85 +75,90 @@ function App() {
                 icon="brightness"
                 scale="s"
                 class="switch-icon"
-              ></CalciteIcon>
-              <CalciteSwitch />
+              />
+              <CalciteSwitch
+                onCalciteSwitchChange={() =>
+                  document.body.classList.toggle("calcite-theme-dark")
+                }
+              />
               <CalciteIcon
                 icon="moon"
                 scale="s"
                 class="switch-icon"
-              ></CalciteIcon>
+              />
             </CalciteLabel>
           </div>
         </div>
 
-        <CalciteShellPanel slot="primary-panel" detached>
+        <CalciteShellPanel slot="primary-panel" position="start" detached>
           <CalciteActionBar slot="action-bar" onClick={handleActionBarClick}>
-            <CalciteAction
-              data-action-id="layers"
-              icon="layers"
-              text="Layers"
-            ></CalciteAction>
-            <CalciteAction
-              data-action-id="basemaps"
-              icon="basemap"
-              text="Basemaps"
-            ></CalciteAction>
-            <CalciteAction
-              data-action-id="legend"
-              icon="legend"
-              text="Legend"
-            ></CalciteAction>
-            <CalciteAction
-              data-action-id="bookmarks"
-              icon="bookmark"
-              text="Bookmarks"
-            ></CalciteAction>
-            <CalciteAction
-              data-action-id="print"
-              icon="print"
-              text="Print"
-            ></CalciteAction>
+            <CalciteActionGroup>
+              <CalciteAction text="Add" id="add" icon="plus" />
+              <CalciteAction
+                text="Save"
+                id="save"
+                disabled
+                icon="save"
+              />
+              <CalciteAction
+                text="Layers"
+                id="layers"
+                indicator
+                icon="layers"
+              />
+            </CalciteActionGroup>
+            <CalciteActionGroup>
+              <CalciteAction
+                text="Legend"
+                id="legend"
+                icon="legend"
+              />
+              <CalciteAction
+                text="Basemaps"
+                id="basemaps"
+                icon="basemap"
+                indicator
+              />
+            </CalciteActionGroup>
           </CalciteActionBar>
-
-          <CalcitePanel
-            heading="Layers"
-            height-scale="l"
-            data-panel-id="layers"
+          <CalciteBlock
+            collapsible
+            open
+            heading="Primary Content"
+            summary="This is the primary content."
           >
-            <div id="layers-container">Layers content</div>
-          </CalcitePanel>
-          <CalcitePanel
-            heading="Basemaps"
-            height-scale="l"
-            data-panel-id="basemaps"
-            hidden
+            <CalciteBlockSection
+              open
+              status="valid"
+              text="Example block section"
+            >
+              <CalciteAction
+                text="Puppies"
+                text-enabled
+                indicator
+                icon="plus"
+              />
+              <CalciteAction
+                text="Kittens"
+                text-enabled
+                icon="save"
+              />
+              <CalciteAction
+                text="Birds?"
+                text-enabled
+                icon="banana"
+              />
+            </CalciteBlockSection>
+          </CalciteBlock>
+          <CalciteBlock
+            collapsible
+            heading="Additional Block"
+            summary="The is another block content."
           >
-            <div id="basemaps-container">Basemaps content</div>
-          </CalcitePanel>
-          <CalcitePanel
-            heading="Legend"
-            height-scale="l"
-            data-panel-id="legend"
-            hidden
-          >
-            <div id="legend-container">Legend content</div>
-          </CalcitePanel>
-          <CalcitePanel
-            heading="Bookmarks"
-            height-scale="l"
-            data-panel-id="bookmarks"
-            hidden
-          >
-            <div id="bookmarks-container">Bookmarks content</div>
-          </CalcitePanel>
-          <CalcitePanel
-            heading="Print"
-            height-scale="l"
-            data-panel-id="print"
-            hidden
-          >
-            <div id="print-container">Print content</div>
-          </CalcitePanel>
+            <CalciteBlockSection text="Not working :'(" status="invalid">
+              <p>Cool thing.</p>
+            </CalciteBlockSection>
+          </CalciteBlock>
         </CalciteShellPanel>
 
         <CalciteShellPanel
@@ -169,7 +168,7 @@ function App() {
           height-scale="l"
         >
           <CalciteFlow>
-            <CalcitePanel heading="Layer settings">
+            <CalcitePanel heading="Data settings">
               <CalciteBlock
                 collapsible
                 open
@@ -186,7 +185,7 @@ function App() {
                       slot="actions-end"
                       text=""
                       icon="camera-flash-on"
-                    ></CalciteAction>
+                    />
                   </CalciteValueListItem>
                   <CalciteValueListItem
                     label="2018 Population Density [Updated]"
@@ -197,7 +196,7 @@ function App() {
                       slot="actions-end"
                       text=""
                       icon="banana"
-                    ></CalciteAction>
+                    />
                   </CalciteValueListItem>
                   <CalciteValueListItem
                     label="2018 Total Households (Esri)"
@@ -208,7 +207,7 @@ function App() {
                       slot="actions-end"
                       text=""
                       icon="person2"
-                    ></CalciteAction>
+                    />
                   </CalciteValueListItem>
                 </CalciteValueList>
               </CalciteBlock>
